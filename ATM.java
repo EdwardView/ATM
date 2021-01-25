@@ -4,6 +4,7 @@ class ATM extends Bank{
     long noteOf_200;
     long noteOf_500;
     long noteOf_2000;
+    
     public ATM(){
         this.noteOf_100 = 0;
         this.noteOf_200 = 0;
@@ -27,6 +28,7 @@ class ATM extends Bank{
         this.noteOf_2000 += sc.nextLong();
     }
 
+    //Deposite Money into ATM
     public void deposite(){
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter Account Number : ");
@@ -54,6 +56,7 @@ class ATM extends Bank{
         }
     }
 
+    //Withdraw Money into ATM
     public void withdraw(){
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter Account Number : ");
@@ -73,6 +76,7 @@ class ATM extends Bank{
             System.out.print("Insufficient balance in ATM")
     }
 
+    //Notes required to your amount
     public void countCurrency(int amount){ 
         int[] notes = new int[]{2000, 500, 200, 100}; 
         int[] noteCounter = new int[4]; 
@@ -87,7 +91,6 @@ class ATM extends Bank{
         } 
         // Print notes thats comes through ATM
         System.out.println("Notes are as "); 
-        
         for (int i = 0; i < 4; i++) { 
             if (noteCounter[i] != 0) {
                 if(notesNumber[i] == noteCounter[i]){ 

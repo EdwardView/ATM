@@ -57,22 +57,21 @@ class account extends person{
         this.balance = balance;
         this.card_credit_debit = card_credit_debit;
     }
-    public void getAccountNumber(){System.out.println("Account Number : "+this.accountNumber);}
+    public String getAccountNumber(){return this.accountNumber;}
     public void getAccountType(){System.out.println("Account Type : "+this.accountType);}
-    public void getAccountBalance(){System.out.println("Account Balance : "+this.balance);}
-    
-    public void WithdrawBalance(long bal){
-        if(this.balance > bal && this.balance-bal>100){
-            this.balance -= bal;
-            System.out.println("Balance Withdraw succesfully!!!");
-        }else
-            System.out.println("Incefficent Balance To Withdraw!!!");
+    public long getAccountBalance(){return this.balance;}
+    public long getCredit_Debit_Card(){return card_credit_debit;}
+
+    public void balanceDebt(long bal){
+        this.balance -= bal;
+        System.out.println("Balance Debt Successfully!!");
     }
 
-    public void depositeBalance(long bal){
-        this.balance -= bal;
-        System.out.println("Balance deposite succesfully!!!");
+    public void balanceCredit(long bal){
+        this.balance += bal;
+        System.out.println("Balance Credit Successfully!!");
     }
+    
 }
 
 class Bank{
@@ -84,7 +83,7 @@ class Bank{
     public void openAccount(){
         Scanner sc = new Scanner(System.in);
         String Name,dob,accountType;
-        long accountNumber,balance,card_credit_debit;
+        long balance,card_credit_debit_temp;
 
         System.out.print("Enter Customer Name : ");
         Name = sc.nextLine();
@@ -103,24 +102,25 @@ class Bank{
         }
 
         System.out.println("Do you want credit  card or debit card? If yes press y else press n..");
-        ch = sc.next().charAt(0))
+        char ch = sc.next().charAt(0);
 
         if(ch == 'y'|| ch == 'Y'){
-            card_credit_debit =  cardNumber_generator();
-            for (Map.Entry mapElement : customerAccounts.entrySet()) {                     
-                if(mapElement.getValue().card_credit_debit == card_credit_debit){
-                    card_credit_debit = generateRandom();
+            card_credit_debit_temp =  cardNumber_generator();
+            for (Map.Entry<String,account> mapElement : customerAccounts.entrySet()) {                     
+                if(mapElement.getValue().getCredit_Debit_Card() == card_credit_debit_temp){
+                    card_credit_debit_temp = cardNumber_generator();
                 } 
             } 
         }else{
-            card_credit_debit = 0;
+            card_credit_debit_temp = 0;
         }
 
-        customerAccounts.put(accountNumber_temp,new account(accountNumber_temp,accountType,balance,Name,dob,card_credit_debit));
+        customerAccounts.put(accountNumber_temp,new account(accountNumber_temp,accountType,balance,Name,dob,card_credit_debit_temp));
 
         System.out.println("Account open sucessfully!!!!1");
 
         System.out.println("Name : "+Name+"\nAccount Number : "+accountNumber_temp+"\nBalance : "+balance);
+        sc.close();
     }
 
     //Random account number generator.
@@ -142,124 +142,78 @@ class Bank{
         return Long.valueOf(sb.toString()).longValue();
     }
 
-    public void depositeMoney(){}
-    public void withdrawMoney(){}
-    public void deleteAccount(){}
-}
-
-
-class ATM extends Bank{
-    long noteOf_100;
-    long noteOf_200;
-    long noteOf_500;
-    long noteOf_2000;
-    
-    public ATM(){
-        this.noteOf_100 = 0;
-        this.noteOf_200 = 0;
-        this.noteOf_500 = 0;
-        this.noteOf_2000 = 0;
-    }
-    //Add Money into ATM..
-    public void addMoneyInATM(){
+    //Withdraw balanace in Account...
+    public void WithdrawBalance(){
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("Enter Note of 100 : ");
-        this.noteOf_100 += sc.nextLong();
-        
-        System.out.println("Enter Note of 200 : ");
-        this.noteOf_200 += sc.nextLong();
-        
-        System.out.println("Enter Note of 500 : ");
-        this.noteOf_500 += sc.nextLong();
-        
-        System.out.println("Enter Note of 2000 : ");
-        this.noteOf_2000 += sc.nextLong();
-    }
-
-    //Deposite Money into ATM
-    public void deposite(){
-        Scanner sc = new Scanner(System.in);
         System.out.println("Enter Account Number : ");
-        String accountNumber_temp = sc.next();
-        if(customerAccounts.containsKey(accountNumber_temp)==true){
-            account temp = customerAccounts.get(accountNumber_temp);
-            System.out.println("Account Holder Name : "+temp.name)
-            System.out.println("Enter Number of Note 100(if Not press 0) : ");
-            int note_100 += sc.nextInt();
-            System.out.println("Enter Number of Note 200(if Not press 0) : ");
-            int note_200 += sc.nextInt();
-            System.out.println("Enter Number of Note 500(if Not press 0) : ");
-            int note_500 += sc.nextInt();
-            System.out.println("Enter Number of Note 2000(if Not press 0) : ");
-            int note_2000 += sc.nextInt();
-            temp.balance = note_100*100+note_200*200+note_500*500+note_2000*2000;
-            this.noteOf_100 += note_100;
-            this.noteOf_200 += note_200;
-            this.noteOf_500 += note_500;
-            this.noteOf_2000 += note_2000;
-            System.out.println("Total Ammount = "+note_100*100+note_200*200+note_500*500+note_2000*2000);
-            System.out.println("Total Balance = "+temp.balance);
-        }else{
-            System.out.println("Wrong Account Number!!!!");
-        }
-    }
-
-    //Withdraw Money into ATM
-    public void withdraw(){
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter Account Number : ");
-        long card_credit_debit_temp = sc.nextLong(); // Debit/Credit card scan number
+        String accountNumberInput = sc.next();
+        long bal = sc.nextLong();
+        boolean flag = false;
         account temp;
-        for (Map.Entry mapElement : customerAccounts.entrySet()) { 
-            temp = mapElement.getValue();                   
-            if(temp.card_credit_debit == card_credit_debit){
+        for (Map.Entry<String,account> mapElement : customerAccounts.entrySet()) {
+            temp = mapElement.getValue();                     
+            if(temp.getAccountNumber() == accountNumberInput){
+                flag = true;
                 break;
             } 
+        } 
+        if(flag == true){
+            if(temp.getAccountBalance() > bal && temp.getAccountBalance()-bal>100){
+                temp.balanceDebt(bal);
+                System.out.println("Balance Withdraw succesfully!!!");
+            }else{
+                System.out.println("Incefficent Balance To Withdraw!!!");
+            }
         }
-        System.out.println("Enter Amount : ");
-        long amount = sc.nextLong();
-        if(amount <= note_100*100+note_200*200+note_500*500+note_2000*2000)
-            findMin(amount);
-        else
-            System.out.print("Insufficient balance in ATM")
+        sc.close();
     }
 
-    //Notes required to your amount
-    public void countCurrency(int amount){ 
-        int[] notes = new int[]{2000, 500, 200, 100}; 
-        int[] noteCounter = new int[4]; 
-        int[] notesNumber = new int[this.note_2000,this.note_500,this.note_200,this.note_100];
+    //Deposite balance in Account....
+    public void depositeBalance(long bal){
+        Scanner sc = new Scanner(System.in);
 
-        // count notes using Greedy approach 
-        for (int i = 0; i < 4; i++) { 
-            if (amount >= notes[i]) { 
-                noteCounter[i] = amount / notes[i]; 
-                amount = amount - noteCounter[i] * notes[i]; 
+        System.out.println("Enter Account Number : ");
+        String accountNumberInput = sc.next();
+        long bal_d = sc.nextLong();
+        boolean flag = false;
+        account temp;
+        for (Map.Entry<String,account> mapElement : customerAccounts.entrySet()) {
+            temp = mapElement.getValue();                     
+            if(temp.getAccountNumber() == accountNumberInput){
+                flag = true;
+                break;
             } 
         } 
-        // Print notes thats comes through ATM
-        System.out.println("Notes are as "); 
-        for (int i = 0; i < 4; i++) { 
-            if (noteCounter[i] != 0) {
-                if(notesNumber[i] == noteCounter[i]){ 
-                    System.out.println(notes[i] + " : " + noteCounter[i]);
-                    notesNumber[i] = 0;
-                }
-                if(notesNumber[i] > noteCounter[i]){
-                    System.out.print(notes[i] + " : " + noteCounter[i]);
-                    notesNumber[i] -= noteCounter[i]; 
-                }
-                if(notesNumber[i] < noteCounter[i]){
-                    System.out.print(notesNumber[i] + " : " + noteCounter[i]);
-                    notesNumber[i] = 0;
-                    int temp = noteCounter[i]-notesNumber[i];
-                    noteCounter[i+1] += (temp*notes[i])%notes[i+1]); 
-         .       }
+        if(flag == true){
+            temp.balanceCredit(bal_d);
+            System.out.println("Balance Desposite succesfully!!!");
+        }
+        sc.close();
+    }
+
+    public void deleteAccount(){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter Account Number : ");
+        String accountNumberInput = sc.next();
+        boolean flag = false;
+        account temp;
+        
+        for (Map.Entry<String,account> mapElement : customerAccounts.entrySet()) {
+            temp = mapElement.getValue();                     
+            if(temp.getAccountNumber() == accountNumberInput){
+                flag = true;
+                break;
             } 
         } 
-    } 
+        if(flag == true){
+            System.out.println(customerAccounts.remove(accountNumberInput).getAccountNumber()+" is deleted successfully!!!!!");
+        }
+        sc.close();
+    }
 }
+
+
 
 class craterZone{
     public static void main(String str[]){
@@ -273,7 +227,7 @@ class craterZone{
             System.out.println("\t\t\t3.Withdraw Money.");
             System.out.println("\t\t\t4.Delete Account.");
             System.out.println("\t\t\t5.Exit!!!!");
-            System.out.println("Enter your choice!!!");
+            System.out.println("\t\t\tEnter your choice!!!");
             
             int ch = sc.nextInt();
             switch(ch){
